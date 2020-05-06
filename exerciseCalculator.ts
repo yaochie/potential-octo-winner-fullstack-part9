@@ -1,6 +1,6 @@
 interface ExerciseArguments {
-    target: number
-    dailyExercise: Array<number>
+    target: number;
+    dailyExercise: Array<number>;
 }
 
 interface ExerciseSummary {
@@ -14,33 +14,33 @@ interface ExerciseSummary {
 }
 
 const parseExerciseArguments = (args: Array<string>): ExerciseArguments => {
-    if (args.length < 4) throw new Error('Too few arguments')
+    if (args.length < 4) throw new Error('Too few arguments');
 
-    const numbers = args.slice(2)
+    const numbers = args.slice(2);
     if (numbers.every(n => !isNaN(Number(n)))) {
         return {
             target: Number(numbers[0]),
             dailyExercise: numbers.slice(1).map(n => Number(n))
-        }
+        };
     } else {
-        throw new Error('Provided values were nots numbers!')
+        throw new Error('Provided values were nots numbers!');
     }
-}
+};
 
 const calculateExercises = (dailyExercise: Array<number>, target: number): ExerciseSummary => {
-    const sum = dailyExercise.reduce((acc, curr) => acc + curr, 0)
-    const average = sum / dailyExercise.length
+    const sum = dailyExercise.reduce((acc, curr) => acc + curr, 0);
+    const average = sum / dailyExercise.length;
 
-    let rating, ratingDescription
+    let rating, ratingDescription;
     if (average >= target) {
-        rating = 3
-        ratingDescription = 'Great! You met your target.'
+        rating = 3;
+        ratingDescription = 'Great! You met your target.';
     } else if (average >= target * 0.75) {
-        rating = 2
-        ratingDescription = 'Not too bad, but could be better'
+        rating = 2;
+        ratingDescription = 'Not too bad, but could be better';
     } else {
-        rating = 1
-        ratingDescription = 'Need to improve!'
+        rating = 1;
+        ratingDescription = 'Need to improve!';
     }
     
     return {
@@ -51,12 +51,12 @@ const calculateExercises = (dailyExercise: Array<number>, target: number): Exerc
         ratingDescription,
         target,
         average
-    }
-}
+    };
+};
 
 try {
-    const { target, dailyExercise } = parseExerciseArguments(process.argv)
-    console.log(calculateExercises(dailyExercise, target))
+    const { target, dailyExercise } = parseExerciseArguments(process.argv);
+    console.log(calculateExercises(dailyExercise, target));
 } catch(e) {
-    console.log('Error!! Message:', e.message)
+    console.log('Error!! Message:', e.message);
 }
