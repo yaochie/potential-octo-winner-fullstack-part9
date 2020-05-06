@@ -54,9 +54,4 @@ const calculateExercises = (dailyExercise: Array<number>, target: number): Exerc
     };
 };
 
-try {
-    const { target, dailyExercise } = parseExerciseArguments(process.argv);
-    console.log(calculateExercises(dailyExercise, target));
-} catch(e) {
-    console.log('Error!! Message:', e.message);
-}
+export { calculateExercises };
