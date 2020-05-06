@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { PatientInfo } from '../types';
+import { PatientInfo, NewPatient } from '../types';
 import patientData from '../../data/patientData';
 
 const getPatientInfo = (): PatientInfo[] => {
@@ -13,7 +13,8 @@ const getPatientInfo = (): PatientInfo[] => {
     }));
 };
 
-const addPatient = (patient): PatientInfo => {
+const addPatient = (patient: NewPatient): PatientInfo => {
+    console.log(typeof patient);
     const newPatient = {
         ...patient,
         id: uuid()
