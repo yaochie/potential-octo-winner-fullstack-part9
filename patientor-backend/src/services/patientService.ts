@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { PatientInfo, NewPatient } from '../types';
+import { PatientInfo, NewPatient, Patient } from '../types';
 import patientData from '../../data/patientData';
 
 const getAllPatientInfo = (): PatientInfo[] => {
@@ -14,7 +14,7 @@ const getAllPatientInfo = (): PatientInfo[] => {
     }));
 };
 
-const getPatientInfo = (id: string): PatientInfo => {
+const getPatientInfo = (id: string): Patient => {
     const patient = patientData.find(p => p.id === id);
     if (!patient) {
         throw new Error('patient id not found: ' + id);
