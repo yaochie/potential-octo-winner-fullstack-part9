@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', (_req, res) => {
     console.log('sending patient info');
-    res.json(patientService.getPatientInfo());
+    res.json(patientService.getAllPatientInfo());
 });
 
 router.post('/', (req, res) => {
@@ -15,6 +15,15 @@ router.post('/', (req, res) => {
         const newPatient = toNewPatient(req.body);
         const addedPatient = patientService.addPatient(newPatient);
         res.json(addedPatient);
+    } catch(e) {
+        res.status(400).send(e.message);
+    }
+});
+
+router.get('/:id', (req, res) => {
+    try {
+        const patient = patientService.getPatientInfo(req.params.id);
+        res.json(patient);
     } catch(e) {
         res.status(400).send(e.message);
     }
