@@ -4,13 +4,12 @@ import { PatientInfo, NewPatient, Patient } from '../types';
 import patientData from '../../data/patientData';
 
 const getAllPatientInfo = (): PatientInfo[] => {
-    return patientData.map(({ id, name, dateOfBirth, gender, occupation, entries }) => ({
+    return patientData.map(({ id, name, dateOfBirth, gender, occupation }) => ({
         id,
         name,
         dateOfBirth,
         gender,
-        occupation,
-        entries
+        occupation
     }));
 };
 
