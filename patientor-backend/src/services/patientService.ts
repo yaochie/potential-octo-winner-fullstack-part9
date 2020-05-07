@@ -22,7 +22,6 @@ const getPatientInfo = (id: string): Patient => {
 };
 
 const addPatient = (patient: NewPatient): PatientInfo => {
-    console.log(typeof patient);
     const newPatient = {
         ...patient,
         id: uuid()
