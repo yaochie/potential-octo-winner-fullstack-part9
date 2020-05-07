@@ -13,14 +13,17 @@ interface EntriesProps {
 }
 
 const EntriesDisplay: React.FC<EntriesProps> = (props) => {
+  const [{ diagnoses },] = useStateValue();
+
   const diagDisplay = (diagnosisCodes: Array<Diagnosis['code']> | undefined) => {
     if (!diagnosisCodes) {
       return null;
     }
 
+    // TODO: error handling?
     return (
       <ul>
-        {diagnosisCodes.map(code => <li key={code}>{code}</li>)}
+        {diagnosisCodes.map(code => <li key={code}>{code} {diagnoses[code].name}</li>)}
       </ul>
     );
   };
@@ -38,6 +41,7 @@ const EntriesDisplay: React.FC<EntriesProps> = (props) => {
 
   return (
     <>
+      <Header size='medium'>entries</Header>
       {props.entries.map(entry => entryDisplay(entry))}
     </>
   );
@@ -85,13 +89,11 @@ const PatientPage: React.FC = () => {
     );
   }
 
-  // {patientInfo.entries.map(entry => entryDisplay(entry))}
   return (
     <Container>
       <Header>{patientInfo.name} <Icon name={genderIcon} /></Header>
       <div>ssn: {patientInfo.ssn}</div>
       <div>occupation: {patientInfo.occupation}</div>
-      <Header size='medium'>entries</Header>
       <EntriesDisplay entries={patientInfo.entries} />
     </Container>
   );
