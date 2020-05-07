@@ -1,48 +1,126 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Header, Container, Icon } from 'semantic-ui-react';
+import { Header, Container, Icon, Segment } from 'semantic-ui-react';
 
 import { apiBaseUrl } from '../constants';
 import { useStateValue } from '../state';
-import { Patient, Entry, Diagnosis } from '../types';
+import {
+  Patient, Entry, Diagnosis, OccupationalHeathcareEntry, HealthCheckEntry,
+  HospitalEntry
+} from '../types';
 import { setPatient } from '../state/reducer';
 
-interface EntriesProps {
-  entries: Entry[];
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
+interface DiagListProps {
+  diagnosisCodes: Array<Diagnosis['code']> | undefined;
 }
 
-const EntriesDisplay: React.FC<EntriesProps> = (props) => {
+const DiagnosesList: React.FC<DiagListProps> = ({ diagnosisCodes }) => {
   const [{ diagnoses },] = useStateValue();
 
-  const diagDisplay = (diagnosisCodes: Array<Diagnosis['code']> | undefined) => {
-    if (!diagnosisCodes) {
+  if (!diagnosisCodes) {
+    return null;
+  }
+
+  // TODO: error handling?
+  return (
+    <ul>
+      {diagnosisCodes.map(code => <li key={code}>{code} {diagnoses[code].name}</li>)}
+    </ul>
+  );
+};
+
+const HospitalDisp: React.FC<{ entry: HospitalEntry }> = ({ entry }) => {
+  return (
+    <Segment key={entry.id}>
+      <Header size='small'>{entry.date} <Icon name='hospital' /></Header>
+      <em>{entry.description}</em>
+      <DiagnosesList diagnosisCodes={entry.diagnosisCodes} />
+      Discharge: {entry.discharge.date}: {entry.discharge.criteria}
+    </Segment>
+  );
+};
+
+const HealthCheckDisp: React.FC<{ entry: HealthCheckEntry }> = ({ entry }) => {
+  let iconColor: ('green' | 'yellow' | 'orange' | 'red') = 'green';
+
+  switch (entry.healthCheckRating) {
+    case 0:
+      iconColor = 'green';
+      break;
+    case 1:
+      iconColor = 'yellow';
+      break;
+    case 2:
+      iconColor = 'orange';
+      break;
+    case 3:
+      iconColor = 'red';
+      break;
+    default:
+      break;
+  }
+
+  return (
+    <Segment key={entry.id}>
+      <Header size='small'>{entry.date} <Icon name='treatment' /></Header>
+      <em>{entry.description}</em>
+      <DiagnosesList diagnosisCodes={entry.diagnosisCodes} />
+      <Header size='tiny'>
+        <Icon color={iconColor} name='heart' />
+      </Header>
+    </Segment>
+  );
+};
+
+const OccupationalHealthcareDisp: React.FC<{ entry: OccupationalHeathcareEntry }> = ({ entry }) => {
+  const sickLeave = (leave: OccupationalHeathcareEntry['sickLeave']) => {
+    if (!leave) {
       return null;
     }
 
-    // TODO: error handling?
     return (
-      <ul>
-        {diagnosisCodes.map(code => <li key={code}>{code} {diagnoses[code].name}</li>)}
-      </ul>
-    );
-  };
-
-  const entryDisplay = (entry: Entry) => {
-    return (
-      <div key={entry.id}>
-        {entry.date} <em>{entry.description}</em>
-        <ul>
-          {diagDisplay(entry.diagnosisCodes)}
-        </ul>
+      <div>
+        Sick Leave: {leave.startDate} - {leave.endDate}
       </div>
     );
   };
 
   return (
+    <Segment key={entry.id}>
+      <Header size='small'>{entry.date} <Icon name='doctor' /> {entry.employerName}</Header>
+      <em>{entry.description}</em>
+      <DiagnosesList diagnosisCodes={entry.diagnosisCodes} />
+      {sickLeave(entry.sickLeave)}
+    </Segment>
+  );
+};
+
+const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+  switch (entry.type) {
+    case 'Hospital':
+      return <HospitalDisp entry={entry} />;
+    case 'HealthCheck':
+      return <HealthCheckDisp entry={entry} />;
+    case 'OccupationalHealthcare':
+      return <OccupationalHealthcareDisp entry={entry} />;
+    default:
+      assertNever(entry);
+  }
+  return null;
+};
+
+const EntriesDisplay: React.FC<{ entries: Entry[]}> = ({ entries }) => {
+  return (
     <>
       <Header size='medium'>entries</Header>
-      {props.entries.map(entry => entryDisplay(entry))}
+      {entries.map(entry => <EntryDetails key={entry.id} entry={entry} />)}
     </>
   );
 };

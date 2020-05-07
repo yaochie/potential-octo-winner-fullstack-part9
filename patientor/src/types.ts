@@ -35,7 +35,7 @@ export enum HealthCheckRating {
   CriticalRisk = 3,
 }
 
-interface HealthCheckEntry extends BaseEntry {
+export interface HealthCheckEntry extends BaseEntry {
   type: 'HealthCheck';
   healthCheckRating: HealthCheckRating;
 }
@@ -45,7 +45,7 @@ interface LeaveInfo {
   endDate: string;
 }
 
-interface OccupationalHeathCheckEntry extends BaseEntry {
+export interface OccupationalHeathcareEntry extends BaseEntry {
   type: 'OccupationalHealthcare';
   employerName: string;
   sickLeave?: LeaveInfo;
@@ -56,7 +56,7 @@ interface DischargeInfo {
   criteria: string;
 }
 
-interface HospitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
   type: 'Hospital';
   discharge: DischargeInfo;
 }
@@ -64,4 +64,4 @@ interface HospitalEntry extends BaseEntry {
 export type Entry =
   | HospitalEntry
   | HealthCheckEntry
-  | OccupationalHeathCheckEntry;
+  | OccupationalHeathcareEntry;
