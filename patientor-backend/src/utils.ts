@@ -120,7 +120,7 @@ export const toNewEntry = (entry: any): NewEntry => {
     }
 };
 
-const parseEntries = (entries: any[]): Entry[] => {
+export const parseEntries = (entries: any[]): Entry[] => {
     if (!entries) {
         throw new Error('missing entries: ' + entries);
     }
@@ -139,6 +139,5 @@ export const toNewPatient = (object: any): NewPatient => {
         ssn: parseSsn(object.ssn),
         gender: parseGender(object.gender),
         occupation: parseOccupation(object.occupation),
-        entries: parseEntries(object.entries),
     };
 };
