@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NewPatient, Gender, Entry, HealthCheckRating } from './types';
+import { NewPatient, Gender, Entry, HealthCheckRating, NewEntry } from './types';
 
 const isString = (text: any): text is string => {
     return typeof text === 'string' || text instanceof String;
@@ -71,14 +71,14 @@ const parseHcr = (hcr: any): HealthCheckRating => {
     return hcr;
 };
 
-const parseEntry = (entry: any): Entry => {
+export const toNewEntry = (entry: any): NewEntry => {
     // get base data
-    const baseEntry: Entry = {
-        id: parseString(entry.id, 'id'),
+    const baseEntry = {
+        type: entry.type,
         date: parseDate(entry.date),
         description: parseString(entry.description, 'description'),
         specialist: parseString(entry.specialist, 'specialist'),
-    } as Entry;
+    } as NewEntry;
 
     if (entry.diagnosisCodes) {
         baseEntry.diagnosisCodes = entry.diagnosisCodes.map(
@@ -86,18 +86,16 @@ const parseEntry = (entry: any): Entry => {
         );
     }
 
-    switch(entry.type) {
+    switch(baseEntry.type) {
         case 'HealthCheck':
             return {
                 ...baseEntry,
-                type: entry.type,
                 healthCheckRating: parseHcr(entry.healthCheckRating),
             };
         case 'OccupationalHealthcare':
             if (entry.sickLeave) {
                 return {
                     ...baseEntry,
-                    type: entry.type,
                     employerName: parseString(entry.employerName, 'employerName'),
                     sickLeave: {
                         startDate: parseDate(entry.sickLeave.startDate),
@@ -107,13 +105,11 @@ const parseEntry = (entry: any): Entry => {
             }
             return {
                 ...baseEntry,
-                type: entry.type,
                 employerName: parseString(entry.employerName, 'employerName'),
             };
         case 'Hospital':
             return {
                 ...baseEntry,
-                type: entry.type,
                 discharge: {
                     date: parseDate(entry.discharge.date),
                     criteria: parseString(entry.discharge.criteria, 'discharge criteria')
@@ -129,10 +125,14 @@ const parseEntries = (entries: any[]): Entry[] => {
         throw new Error('missing entries: ' + entries);
     }
 
-    return entries.map(e => parseEntry(e));
+    return entries.map(e => {
+        const object = toNewEntry(e) as Entry;
+        object.id = e.id;
+        return object;
+    });
 };
 
-const toNewPatient = (object: any): NewPatient => {
+export const toNewPatient = (object: any): NewPatient => {
     return {
         name: parseName(object.name),
         dateOfBirth: parseDate(object.dateOfBirth),
@@ -142,5 +142,3 @@ const toNewPatient = (object: any): NewPatient => {
         entries: parseEntries(object.entries),
     };
 };
-
-export default toNewPatient;
