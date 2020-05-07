@@ -10,14 +10,24 @@ interface DiagListProps {
 const DiagnosisList: React.FC<DiagListProps> = ({ diagnosisCodes }) => {
   const [{ diagnoses },] = useStateValue();
 
-  if (!diagnosisCodes) {
+  if (!diagnosisCodes || !diagnoses) {
     return null;
   }
+
+  const displayCode = (code: string) => {
+    // if (!diagnoses.hasOwnProperty(code)) {
+    if (!(code in diagnoses)) {
+      return null;
+    }
+    return (
+      <li key={code}>{code} {diagnoses[code].name}</li>
+    );
+  };
 
   // TODO: error handling?
   return (
     <ul>
-      {diagnosisCodes.map(code => <li key={code}>{code} {diagnoses[code].name}</li>)}
+      {diagnosisCodes.map(code => displayCode(code))}
     </ul>
   );
 };

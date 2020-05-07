@@ -53,10 +53,40 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
     },
   } as EntryFormValues;
 
+  const validate = (values: EntryFormValues) => {
+    const requiredError = 'Field is required';
+    const dateError = 'Invalid date';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const errors: { [field: string]: any } = { discharge: {} };
+    
+    if (!values.date) {
+      errors.date = requiredError;
+    } else if (!Date.parse(values.date)) {
+      errors.date = dateError;
+    }
+    if (!values.description) {
+      errors.description = requiredError;
+    }
+    if (!values.specialist) {
+      errors.specialist = requiredError;
+    }
+    if (!values.discharge.criteria) {
+      errors.discharge.criteria = requiredError;
+    }
+    if (!values.discharge.date) {
+      errors.discharge.date = requiredError;
+    } else if (!Date.parse(values.discharge.date)) {
+      errors.discharge.date = dateError;
+    }
+
+    return errors;
+  };
+
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
+      validate={validate}
     >
       {({ isValid, dirty, setFieldValue, setFieldTouched }) => 
         <Form className="form ui">
@@ -72,13 +102,15 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
             name='description'
             component={TextField}
           />
-          <TextField2
+          <Field
             label='Specialist'
-            placeholder='test'
+            placeholder=''
             name='specialist'
+            component={TextField}
           />
           <Field
             label='Discharge Date'
+            placeholder='YYYY-MM-DD'
             name='discharge.date'
             component={TextField}
           />
