@@ -1,17 +1,17 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Header, Container, Icon, Segment } from 'semantic-ui-react';
+import { Header, Container, Icon, Button } from 'semantic-ui-react';
 
 import { apiBaseUrl } from '../constants';
 import { useStateValue } from '../state';
-import {
-  Patient, Entry, OccupationalHeathcareEntry
-} from '../types';
+import { Patient, Entry } from '../types';
 import { setPatient } from '../state/reducer';
 import HospitalDisp from './HospitalDisp';
 import HealthCheckDisp from './HealthCheckDisp';
 import OccupationalHealthcareDisp from './OccupationalHealthcareDisp';
+import AddEntryModal from '../AddEntryModal';
+import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
 
 const assertNever = (value: never): never => {
   throw new Error(
@@ -46,6 +46,8 @@ const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [{ patients }, dispatch] = useStateValue();
 
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+
   React.useEffect(() => {
     // don't query if the info is already in the state
     const patientInfo = Object.values(patients).find((p: Patient) => p.id === id);
@@ -66,6 +68,26 @@ const PatientPage: React.FC = () => {
     fetchPatient(id);
   }, [dispatch, id, patients]);
 
+  const openModal = (): void => setModalOpen(true);
+  
+  const closeModal = (): void => {
+    setModalOpen(false);
+  };
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      console.log('got values', values);
+      const { data: newPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        values
+      );
+      dispatch(setPatient(newPatient));
+      closeModal();
+    } catch(e) {
+      console.error(e.response.data);
+    }
+  };
+
   const patientInfo = Object.values(patients).find((p: Patient) => p.id === id);
 
   if (!patientInfo) {
@@ -85,12 +107,22 @@ const PatientPage: React.FC = () => {
   }
 
   return (
-    <Container>
-      <Header>{patientInfo.name} <Icon name={genderIcon} /></Header>
-      <div>ssn: {patientInfo.ssn}</div>
-      <div>occupation: {patientInfo.occupation}</div>
-      <EntriesDisplay entries={patientInfo.entries} />
-    </Container>
+    <div>
+      <Container>
+        <Header>{patientInfo.name} <Icon name={genderIcon} /></Header>
+        <div>ssn: {patientInfo.ssn}</div>
+        <div>occupation: {patientInfo.occupation}</div>
+        <EntriesDisplay entries={patientInfo.entries} />
+      </Container>
+      <Container>
+        <AddEntryModal
+          modalOpen={modalOpen}
+          onClose={closeModal}
+          onSubmit={submitNewEntry}
+        />
+        <Button onClick={() => openModal()}>Add New Entry</Button>
+      </Container>
+    </div>
   );
 };
 
