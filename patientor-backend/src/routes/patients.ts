@@ -29,7 +29,7 @@ router.get('/:id', (req, res) => {
     }
 });
 
-router.post('/:id', (req, res) => {
+router.post('/:id/entries', (req, res) => {
     try {
         const entry = toNewEntry(req.body);
         const patient = patientService.addPatientEntry(req.params.id, entry);
