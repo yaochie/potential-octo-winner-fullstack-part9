@@ -5,7 +5,7 @@ import { HealthCheckEntry } from '../types';
 import DiagnosisList from './DiagnosisList';
 
 const HealthCheckDisp: React.FC<{ entry: HealthCheckEntry }> = ({ entry }) => {
-  let iconColor: ('green' | 'yellow' | 'orange' | 'red') = 'green';
+  let iconColor: ('green' | 'yellow' | 'red' | 'black' ) = 'green';
 
   switch (entry.healthCheckRating) {
     case 0:
@@ -15,10 +15,10 @@ const HealthCheckDisp: React.FC<{ entry: HealthCheckEntry }> = ({ entry }) => {
       iconColor = 'yellow';
       break;
     case 2:
-      iconColor = 'orange';
+      iconColor = 'red';
       break;
     case 3:
-      iconColor = 'red';
+      iconColor = 'black';
       break;
     default:
       break;

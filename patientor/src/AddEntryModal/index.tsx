@@ -2,6 +2,13 @@ import React from 'react';
 import { Modal } from 'semantic-ui-react';
 import AddEntryForm, { EntryFormValues } from './AddEntryForm';
 
+export enum ModalState {
+  Hospital,
+  HealthCheck,
+  OccHealthcare,
+  Closed
+}
+
 interface Props {
   modalOpen: boolean;
   onClose: () => void;
