@@ -17,6 +17,13 @@ const isHcr = (hcr: any): hcr is HealthCheckRating => {
     return Object.values(HealthCheckRating).includes(hcr);
 };
 
+// check if sickLeave is empty
+const isSickLeave = (sickLeave: any): boolean => {
+    return sickLeave !== undefined &&
+        isString(sickLeave.startDate) && isDate(sickLeave.startDate) &&
+        isString(sickLeave.endDate) && isDate(sickLeave.endDate);
+};
+
 const ssnRegex = RegExp(/^[0-9]{6}-(?:[0-9]{2,3}[A-Z]|[0-9]{2,4})$/);
 const isSsn = (ssn: string): boolean => {
     return ssnRegex.test(ssn);
@@ -93,7 +100,7 @@ export const toNewEntry = (entry: any): NewEntry => {
                 healthCheckRating: parseHcr(entry.healthCheckRating),
             };
         case 'OccupationalHealthcare':
-            if (entry.sickLeave) {
+            if (isSickLeave(entry.sickLeave)) {
                 return {
                     ...baseEntry,
                     employerName: parseString(entry.employerName, 'employerName'),
