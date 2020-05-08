@@ -24,20 +24,6 @@ interface TextProps {
   placeholder: string;
 }
 
-const TextField2: React.FC<{name: string; label: string; placeholder: string}> = ({
-  name,
-  label,
-  placeholder
-}) => (
-  <FormUI.Field>
-    <label>{label}</label>
-    <Field placeholder={placeholder} name={name} />
-    <div style={{ color: 'red' }}>
-      <ErrorMessage name={Field.name} />
-    </div>
-  </FormUI.Field>
-);
-
 export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
   const [{ diagnoses }] = useStateValue();
 
@@ -57,7 +43,7 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
     const requiredError = 'Field is required';
     const dateError = 'Invalid date';
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const errors: { [field: string]: any } = { discharge: {} };
+    const errors: { [field: string]: any } = {};
     
     if (!values.date) {
       errors.date = requiredError;
@@ -70,13 +56,18 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
     if (!values.specialist) {
       errors.specialist = requiredError;
     }
+
+    const dischargeErrors: { [field: string]: string } = {};
     if (!values.discharge.criteria) {
-      errors.discharge.criteria = requiredError;
+      dischargeErrors.criteria = requiredError;
     }
     if (!values.discharge.date) {
-      errors.discharge.date = requiredError;
+      dischargeErrors.date = requiredError;
     } else if (!Date.parse(values.discharge.date)) {
-      errors.discharge.date = dateError;
+      dischargeErrors.date = dateError;
+    }
+    if (Object.keys(dischargeErrors).length > 0) {
+      errors.discharge = dischargeErrors;
     }
 
     return errors;
